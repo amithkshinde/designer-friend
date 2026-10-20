@@ -1,3 +1,4 @@
+import { clone } from "./compat";
 import { DocumentModel, ROOT_ID, makeNode, newId } from "./document";
 import { History } from "./history";
 import { boundsOf, fitRect, unionRects, worldRect, zoomAt } from "./geometry";
@@ -157,7 +158,7 @@ export class Editor {
         const parent = this.doc.require(original.parentId as string);
         const idMap = new Map<string, string>();
         const nodes = this.doc.subtree(id).map((n) => {
-          const copy = structuredClone(n);
+          const copy = clone(n);
           copy.id = newId();
           idMap.set(n.id, copy.id);
           return copy;

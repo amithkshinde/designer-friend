@@ -14,6 +14,7 @@ import {
   worldRect,
   type HandleId,
 } from "./geometry";
+import { wheelDeltaPixels } from "./compat";
 import { ROOT_ID } from "./document";
 import type { Rect, Tool } from "./types";
 
@@ -47,6 +48,21 @@ export class InputController {
     canvas.addEventListener("pointercancel", (e) => this.pointerUp(e, true));
     canvas.addEventListener("pointerleave", () => this.setHover(null));
     canvas.addEventListener("wheel", (e) => this.wheel(e), { passive: false });
+    // Safari reports trackpad pinch (and iOS page pinch) as gesture events, not ctrl+wheel.
+    // Without handling them Safari would zoom the whole page instead of the canvas.
+    let gestureZoom = 1;
+    canvas.addEventListener("gesturestart", (e) => {
+      e.preventDefault();
+      gestureZoom = this.editor.viewport.zoom;
+    });
+    canvas.addEventListener("gesturechange", (e) => {
+      e.preventDefault();
+      const scale = (e as unknown as { scale: number }).scale;
+      const p = this.local(e as unknown as MouseEvent);
+      const target = gestureZoom * scale;
+      this.editor.zoomBy(target / this.editor.viewport.zoom, p.x, p.y);
+    });
+    canvas.addEventListener("gestureend", (e) => e.preventDefault());
     canvas.addEventListener("dblclick", (e) => this.doubleClick(e));
     canvas.addEventListener("contextmenu", (e) => e.preventDefault());
     window.addEventListener("keydown", (e) => this.keyDown(e));
@@ -378,12 +394,13 @@ export class InputController {
     e.preventDefault();
     const { editor } = this;
     const p = this.local(e);
+    const { dx: rawX, dy: rawY } = wheelDeltaPixels(e, editor.size.height);
     if (e.ctrlKey || e.metaKey) {
       // Clamp so one mouse-wheel notch zooms about 25% while small trackpad pinch deltas stay smooth.
-      editor.zoomBy(Math.exp(-Math.max(-25, Math.min(25, e.deltaY)) * 0.01), p.x, p.y);
+      editor.zoomBy(Math.exp(-Math.max(-25, Math.min(25, rawY)) * 0.01), p.x, p.y);
     } else {
-      const dx = e.shiftKey && e.deltaX === 0 ? e.deltaY : e.deltaX;
-      const dy = e.shiftKey && e.deltaX === 0 ? 0 : e.deltaY;
+      const dx = e.shiftKey && rawX === 0 ? rawY : rawX;
+      const dy = e.shiftKey && rawX === 0 ? 0 : rawY;
       editor.setViewport({ ...editor.viewport, x: editor.viewport.x - dx, y: editor.viewport.y - dy });
     }
   }

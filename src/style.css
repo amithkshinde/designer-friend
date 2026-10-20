@@ -19,12 +19,16 @@ body {
   color: var(--text);
   font: 13px/1.4 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   -webkit-user-select: none;
   user-select: none;
 }
 button { font: inherit; color: inherit; }
 
 #app {
+  height: 100vh; /* fallback for browsers without dynamic viewport units */
   height: 100dvh;
   display: grid;
   grid-template-columns: 240px 1fr 264px;
@@ -78,7 +82,7 @@ button { font: inherit; color: inherit; }
 .panel-body { overflow: auto; flex: 1; padding: 6px; }
 
 #stage { grid-area: stage; position: relative; min-width: 0; min-height: 0; overflow: hidden; }
-#canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }
 #zoom-chip {
   position: absolute;
   right: 10px;
@@ -179,6 +183,7 @@ button { font: inherit; color: inherit; }
     /* Sit above the bottom toolbar so it stays reachable to switch or close sheets. */
     bottom: calc(var(--touch) + 9px + env(safe-area-inset-bottom));
     width: auto;
+    height: 50vh;
     height: 50dvh;
     border: 0;
     border-top: 1px solid var(--line);
@@ -192,6 +197,8 @@ button { font: inherit; color: inherit; }
 /* Coarse pointers get larger hit targets */
 @media (pointer: coarse) {
   :root { --touch: 44px; }
+  /* iOS Safari zooms the page when a focused field is smaller than 16px. */
+  .field input[type="text"], .field textarea, .layer input { font-size: 16px; }
   .layer { min-height: 44px; }
   .layer .mini { width: 40px; height: 40px; }
   .field { height: 40px; }

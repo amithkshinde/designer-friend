@@ -1,4 +1,5 @@
 import "./style.css";
+import { downloadBlob as download, unsupportedReason } from "./engine/compat";
 import { DocumentModel } from "./engine/document";
 import { Editor } from "./engine/editor";
 import { InputController } from "./engine/input";
@@ -15,13 +16,10 @@ const $ = <T extends HTMLElement>(id: string): T => {
   return el as T;
 };
 
-function download(blob: Blob, name: string): void {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = name;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+const unsupported = unsupportedReason();
+if (unsupported) {
+  document.body.innerHTML = `<div style="padding:24px;max-width:480px;margin:auto;font:16px system-ui,sans-serif;color:#ececf1"><h2>This browser is not supported</h2><p>${unsupported} Please use a recent version of Chrome, Edge, Firefox or Safari.</p></div>`;
+  throw new Error(unsupported);
 }
 
 const editor = new Editor(loadSaved() ?? seedDocument());

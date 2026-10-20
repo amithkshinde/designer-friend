@@ -7,11 +7,30 @@ A browser-based design tool in the spirit of Figma: infinite canvas, frames, sha
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # unit tests for the engine
+npm test           # unit tests for the engine and browser fallbacks
 npm run build      # typecheck + production build into dist/
 ```
 
 Requires Node 20 or newer.
+
+## Browser support
+
+| Browser | Target | Status |
+| --- | --- | --- |
+| Chrome, Edge (Chromium) | 87+ | Tested in headless Chromium at desktop, tablet and phone sizes |
+| Firefox | 78+ | Code handles its differences (see below); not yet run on a real Firefox |
+| Safari, iOS Safari | 14+ | Code handles its differences (see below); not yet run on real Safari or iOS |
+
+The build is transpiled for those versions. Features newer than that are detected at runtime and replaced with fallbacks, all in `src/engine/compat.ts`:
+
+- `crypto.randomUUID` is missing on plain HTTP (for example opening the dev server by LAN address) and before Safari 15.4. A UUID fallback is used.
+- `structuredClone` (Safari before 15.4, Firefox before 94) and `roundRect` (Safari before 16, Firefox before 112) have fallbacks.
+- Firefox reports mouse-wheel steps in lines, not pixels. Wheel input is normalised so pan and zoom feel the same everywhere.
+- Safari sends trackpad pinch as `gesture*` events instead of Ctrl + wheel. Those are handled, which also stops iOS from zooming the whole page.
+- `100dvh` and CSS `inset` have fallbacks, inputs use 16 px text on touch devices so iOS does not zoom on focus, and downloads attach the link to the page so Firefox honours them.
+- A browser missing Pointer Events, ResizeObserver or Canvas 2D, or one without ES module support, shows a plain message instead of a blank page.
+
+The fallbacks are unit tested, and the app was run in Chromium with those APIs removed and over insecure HTTP. If something misbehaves in Firefox or Safari, please open an issue with the browser and version.
 
 ## What works today
 

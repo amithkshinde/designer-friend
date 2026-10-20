@@ -1,3 +1,4 @@
+import { roundRectPath } from "./compat";
 import type { Editor } from "./editor";
 import { ROOT_ID, type DocumentModel } from "./document";
 import { HANDLES, boundsOf, handlePosition, worldOrigin } from "./geometry";
@@ -14,7 +15,7 @@ function pathShape(ctx: CanvasRenderingContext2D, node: Node, x: number, y: numb
     return;
   }
   const r = Math.min(node.cornerRadius, node.width / 2, node.height / 2);
-  if (r > 0) ctx.roundRect(x, y, node.width, node.height, r);
+  if (r > 0) roundRectPath(ctx, x, y, node.width, node.height, r);
   else ctx.rect(x, y, node.width, node.height);
 }
 
@@ -181,7 +182,7 @@ export class Renderer {
       const ly = r.y + r.height + 10;
       ctx.fillStyle = ACCENT;
       ctx.beginPath();
-      ctx.roundRect(lx, ly, tw, 18, 4);
+      roundRectPath(ctx, lx, ly, tw, 18, 4);
       ctx.fill();
       ctx.fillStyle = "#fff";
       ctx.textBaseline = "middle";

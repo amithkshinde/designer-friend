@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#1e1e22" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <title>Designer Friend</title>
   </head>
   <body>
@@ -27,5 +29,10 @@
       </aside>
     </div>
     <script type="module" src="/src/main.ts"></script>
+    <script nomodule>
+      document.getElementById("app").innerHTML =
+        '<p style="padding:24px;font:16px system-ui,sans-serif">This browser is too old to run Designer Friend. Please use a recent version of Chrome, Edge, Firefox or Safari.</p>';
+    </script>
+    <noscript>Designer Friend needs JavaScript to run.</noscript>
   </body>
 </html>

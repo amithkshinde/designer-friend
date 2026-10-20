@@ -1,9 +1,10 @@
+import { clone, uuid } from "./compat";
 import { NODE_TYPES, type Node, type NodeType, type Op } from "./types";
 
 export const ROOT_ID = "root";
 
 export function newId(): string {
-  return globalThis.crypto.randomUUID();
+  return uuid();
 }
 
 const DEFAULTS: Record<NodeType, Partial<Node>> = {
@@ -100,7 +101,7 @@ export class DocumentModel {
         for (const n of op.nodes) {
           if (this.nodes.has(n.id)) throw new Error(`add: id already exists: ${n.id}`);
         }
-        for (const n of op.nodes) this.nodes.set(n.id, structuredClone(n));
+        for (const n of op.nodes) this.nodes.set(n.id, clone(n));
         this.require(top.id).parentId = parent.id;
         const index = Math.max(0, Math.min(op.index, parent.children.length));
         parent.children.splice(index, 0, top.id);
@@ -111,7 +112,7 @@ export class DocumentModel {
         const node = this.require(op.id);
         const parent = this.require(node.parentId as string);
         const index = parent.children.indexOf(op.id);
-        const removed = this.subtree(op.id).map((n) => structuredClone(n));
+        const removed = this.subtree(op.id).map((n) => clone(n));
         removed[0]!.parentId = parent.id;
         for (const n of removed) this.nodes.delete(n.id);
         parent.children.splice(index, 1);
@@ -141,7 +142,7 @@ export class DocumentModel {
   }
 
   toJSON(): DocJSON {
-    return { version: 1, nodes: [...this.nodes.values()].map((n) => structuredClone(n)) };
+    return { version: 1, nodes: [...this.nodes.values()].map((n) => clone(n)) };
   }
 
   /** Builds a document from untrusted JSON, throwing if the structure is inconsistent. */
