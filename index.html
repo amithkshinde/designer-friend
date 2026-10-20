@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#1e1e22" />
+    <title>Designer Friend</title>
+  </head>
+  <body>
+    <div id="app">
+      <header id="topbar">
+        <div id="tools" role="toolbar" aria-label="Tools"></div>
+        <div id="actions" role="toolbar" aria-label="Actions"></div>
+      </header>
+      <aside id="layers-panel" class="panel" aria-label="Layers">
+        <div class="panel-title">Layers</div>
+        <div id="layers" class="panel-body"></div>
+      </aside>
+      <main id="stage">
+        <canvas id="canvas"></canvas>
+        <textarea id="text-editor" spellcheck="false" hidden></textarea>
+        <div id="zoom-chip"></div>
+      </main>
+      <aside id="props-panel" class="panel" aria-label="Properties">
+        <div class="panel-title">Properties</div>
+        <div id="props" class="panel-body"></div>
+      </aside>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
